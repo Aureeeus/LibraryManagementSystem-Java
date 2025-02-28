@@ -62,7 +62,7 @@ public class BookAcquisitionRunner {
       char bookCategory1 = book1.bookCategory;
       char bookCategory2 = book2.bookCategory;
 
-      // Check if it's the same to to yield an additional discount.
+      // Check if it's the same to yield an additional discount.
       if (bookAuthorName1.equals(bookAuthorName2)) {
         if (bookCategory1 == bookCategory2 && !bookTitle1.equals(bookTitle2)) {
           additionalDiscount = 0.2F;
