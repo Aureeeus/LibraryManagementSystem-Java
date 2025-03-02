@@ -1,2 +1,2 @@
 # Graphical User Interface
-jdk<=23
+jdk>=23
