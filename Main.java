@@ -3,7 +3,10 @@ import module2_exercise2_1_dataypesAndOperators.*;
 import javax.swing.*;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,7 +48,101 @@ public class Main {
     navigator.add(Box.createRigidArea(new Dimension(0, 10)));
 
     // Event handlers.
+    viewOrderButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent event) {
+        // Constraint if the order is empty.
+        if (orders.isEmpty() && books.isEmpty()) {
+          JOptionPane.showMessageDialog(
+              frame,
+              "Please order a book first to see further details.",
+              "Content Unavailable",
+              JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+
+        // Create content panel for scrolling purposes.
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+        // Iterate through book hashmap.
+        orders.forEach((book, supplier) -> {
+          // Child panel for each book contents.
+          JPanel childPanel = new JPanel(new BorderLayout());
+
+          // Setting book title at the top.
+          JLabel titleLabel = new JLabel(book.bookTitle);
+          titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+          childPanel.add(titleLabel, BorderLayout.NORTH);
+
+          // Inner panel for book's details.
+          JPanel innerPanel = new JPanel(new GridBagLayout());
+          GridBagConstraints gbc = new GridBagConstraints();
+          gbc.insets = new Insets(5, 5, 5, 5);
+
+          // Initialize label and fields values.
+          String[] labels = {
+              "Author's Name:", "Book's ID:", "Book's Category:", "Book's Price:",
+              "Supplier's Name:", "Supplier's Address:", "Supplier's Contact #:", "Supplier's ID:"
+          };
+          String[] fields = {
+              // Book details.
+              book.getAuthorName(), String.valueOf(book.bookId),
+              String.valueOf(book.bookCategory), String.valueOf(book.bookPrice),
+              // Supplier details.
+              supplier.getSupplierName(), supplier.getSupplierAddress(),
+              String.valueOf(supplier.getSupplierTelephoneNumber()), String.valueOf(supplier.getSupplierId())
+          };
+
+          // Align label-field pairs vertically.
+          for (int i = 0; i < labels.length; i++) {
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            gbc.anchor = GridBagConstraints.EAST;
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.weightx = 0.0;
+            innerPanel.add(new JLabel(labels[i]), gbc);
+
+            gbc.gridx = 1;
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1.0;
+            JTextField field = new JTextField(fields[i], 15);
+            field.setEditable(false);
+            innerPanel.add(field, gbc);
+          }
+
+          // Add inner panel to child panel.
+          childPanel.add(innerPanel, BorderLayout.CENTER);
+
+          // Add child panel to content panel.
+          contentPanel.add(childPanel);
+        });
+
+        // Create scrollable panel.
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setPreferredSize(new Dimension(400, 400));
+
+        // Display user options and handle it.
+        Object[] options = { "Exit" };
+        int result = JOptionPane.showOptionDialog(
+            frame,
+            scrollPane,
+            "Order Details",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            options,
+            options[0]);
+
+        // Close dialog if user exits.
+        if (result < 1) {
+          return;
+        }
+      }
+    });
     orderBookButton.addActionListener(new ActionListener() {
+
       @Override
       public void actionPerformed(ActionEvent event) {
         orderBook = true;
